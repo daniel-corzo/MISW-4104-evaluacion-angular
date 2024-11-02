@@ -15,12 +15,24 @@ export class ListarVehiculoComponent implements OnInit, OnDestroy {
 
   vehiculos: Vehiculo[] = [];
   unsubscribe$ = new Subject<void>();
+  conteoMarcas: { marca: string, total: number }[] = [];
 
   ngOnInit(): void {
     this.vehiculosService.getVehiculos()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(vehiculos => {
         this.vehiculos = vehiculos;
+
+        this.vehiculos.forEach(vehiculo => {
+          const marca = vehiculo.marca;
+          const marcaEncontrada = this.conteoMarcas.find(m => m.marca === marca);
+
+          if (marcaEncontrada) {
+            marcaEncontrada.total++;
+          } else {
+            this.conteoMarcas.push({ marca, total: 1 });
+          }
+        });
       });
   }
 
